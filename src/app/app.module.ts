@@ -3,6 +3,9 @@ import { NgModule } from '@angular/core';
 
 
 import { AppComponent } from './app.component';
+import { StorageService } from './_lib/storage.service';
+import { CryptoService } from './_lib/_crypto.service';
+
 
 
 @NgModule({
@@ -12,7 +15,7 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule
   ],
-  providers: [],
+  providers: [StorageService, CryptoService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
