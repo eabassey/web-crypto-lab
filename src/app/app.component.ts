@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { StorageService } from './_lib/storage.service';
 import { CryptoService } from './_lib/_crypto.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/fromPromise';
+import { AES_CBC_KEY_NAME } from './_lib/config';
+
 
 @Component({
   selector: 'app-root',
@@ -11,21 +13,23 @@ import 'rxjs/add/observable/fromPromise';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private db: StorageService, private crypto: CryptoService) { }
-  
+  constructor(private db: StorageService,
+              private crypto: CryptoService,
+              @Inject(AES_CBC_KEY_NAME) private aesKeyName: string) { }
+
   ngOnInit() {
     // On Start, Check if Key already exists else create and store in localStorage
     if (!this.keyIsAvailable) {
       this.crypto.generateAesCbcKey()
         .then((aesKey) => {
-           window.localStorage.setItem('aes-cbc', aesKey);
+           window.localStorage.setItem(this.aesKeyName, aesKey);
         });
     }
   }
 
   // Checking for key string in localStorage
   get keyIsAvailable(): boolean {
-    return !!window.localStorage.getItem('aes-cbc');
+    return !!window.localStorage.getItem(this.aesKeyName);
   }
 
   onResetOrChangePassword() {
