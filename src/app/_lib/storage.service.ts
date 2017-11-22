@@ -5,11 +5,11 @@ import Dexie from 'dexie';
 export class StorageService extends Dexie {
 
 
-    customers: Dexie.Table<ArrayBuffer, number>;
+    customers: Dexie.Table<{id?: number, cipher: string}, number>;
     constructor() {
         super('HotelDb');
         this.version(1).stores({
-            customers: 'id,firstName'
+            customers: '++id'
         });
     }
 }

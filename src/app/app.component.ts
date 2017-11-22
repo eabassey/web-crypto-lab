@@ -13,30 +13,10 @@ import { AES_CBC_KEY_NAME } from './_lib/config';
 })
 export class AppComponent implements OnInit {
 
-  constructor(private db: StorageService,
-              private crypto: CryptoService,
-              @Inject(AES_CBC_KEY_NAME) private aesKeyName: string) { }
+  constructor() { }
 
   ngOnInit() {
-    // On Start, Check if Key already exists else create and store in localStorage
-    if (!this.keyIsAvailable) {
-      this.crypto.generateAesCbcKey()
-        .then((aesKey) => {
-           window.localStorage.setItem(this.aesKeyName, aesKey);
-        });
-    }
-  }
 
-  // Checking for key string in localStorage
-  get keyIsAvailable(): boolean {
-    return !!window.localStorage.getItem(this.aesKeyName);
   }
-
-  onResetOrChangePassword() {
-    // delete both AES Key in localStorage and the whole IndexedDB database.
-    // generate new AES Key and store in localStorage
-    // Refetch all data into IndexedDB encrypted with AES Key.
-  }
-
 
 }

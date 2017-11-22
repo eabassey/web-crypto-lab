@@ -1,0 +1,37 @@
+<p>
+  single-key works!
+  <button (click)="addCustomer()">Add Customer Encrypted</button>
+  <button (click)="showCustomers()">Dencrypt Info</button>
+</p>
+<p *ngFor="let cust of customers">
+  {{cust.id}}: {{cust.lastName}}, {{cust.firstName}}
+</p>
+
+<div>
+  <h4>Notes:</h4>
+  <ol>
+    <li>One key is used here for both encryption and decrytion</li>
+    <li>The key is generated on application startup and stored in localStorage, since it is a single key</li>
+    <li>The same key is used to encrypt data as they are created in the application</li>
+    <li>The same key is used to decrypt data as they are accessed by the application</li>
+    <li>
+      If key is intentionally deleted:
+      <ul>
+        <li>The IndexedDB database is also deleted completely with all data</li>
+        <li>A new key is regenerated</li>
+        <li>The new key is used to encrypt fresh data from the server and restored into IndexedDB</li>
+        <li>The new key is used subsequently until another deletion or password change</li>
+      </ul>
+    </li>
+    <li>
+      If user changes his or her password:
+      <ul>
+        <li>The existing key in localStorage is deleted</li>
+        <li>The IndexedDB database is also deleted completely with all data</li>
+        <li>A new key is regenerated</li>
+        <li>The new key is used to encrypt fresh data from the server and restored into IndexedDB</li>
+        <li>The new key is used subsequently until another deletion or password change</li>
+      </ul>
+    </li>
+  </ol>
+</div>
