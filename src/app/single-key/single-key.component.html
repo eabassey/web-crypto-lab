@@ -1,7 +1,8 @@
 <p>
   single-key works!
   <button (click)="addCustomer()">Add Customer Encrypted</button>
-  <button (click)="showCustomers2()">Dencrypt Info</button>
+  <button (click)="showCustomers()">Dencrypt Info</button>
+  <button (click)="onResetOrChangePassword()">ChangePassword - effect..</button>
 </p>
 <p *ngFor="let cust of customers">
   {{cust.id}}: {{cust.lastName}}, {{cust.firstName}}

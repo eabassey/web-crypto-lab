@@ -26,15 +26,24 @@ export class SingleKeyComponent implements OnInit {
   ngOnInit() {
     // On Start, Check if Key already exists else create and store in localStorage
     if (!this.keyIsAvailable) {
-      this.crypto.generateAesCbcKey()
-        .then((aesKey) => {
-          localStorage.setItem(this.aesKeyName, aesKey);
-
-          const iv = window.crypto.getRandomValues(new Uint8Array(16));
-          const ivHexString = Util.byteArrayToHexString(iv);
-          localStorage.setItem(this.ivName, ivHexString);
-        });
+      this.initialize();
     }
+  }
+
+  // ON EVERY STARTUP, PASSWORD CHANGE, DELETING KEY IN STORAGE
+  initialize() {
+    // clear data in existing table(s)
+    this.db.customers.clear();
+
+    // recreate key and store in localStorage
+    this.crypto.generateAesCbcKey()
+      .then((aesKey) => {
+        localStorage.setItem(this.aesKeyName, aesKey);
+
+        const iv = window.crypto.getRandomValues(new Uint8Array(16));
+        const ivHexString = Util.byteArrayToHexString(iv);
+        localStorage.setItem(this.ivName, ivHexString);
+      });
   }
 
   // Checking for key string in localStorage
@@ -45,13 +54,26 @@ export class SingleKeyComponent implements OnInit {
 
   onResetOrChangePassword() {
     // delete both AES Key in localStorage and the whole IndexedDB database.
+    localStorage.removeItem(this.aesKeyName);
+    localStorage.removeItem(this.ivName);
+    this.db.delete();
+
     // generate new AES Key and store in localStorage
-    // Refetch all data into IndexedDB encrypted with AES Key.
+     this.crypto.generateAesCbcKey()
+     .then((aesKey) => {
+       localStorage.setItem(this.aesKeyName, aesKey);
+
+       const iv = window.crypto.getRandomValues(new Uint8Array(16));
+       const ivHexString = Util.byteArrayToHexString(iv);
+       localStorage.setItem(this.ivName, ivHexString);
+     });
+
+    // Refetch all data into IndexedDB encrypted with AES Key. --TODO
   }
 
   // COMPONENT FUNCTIONS
   addCustomer() {
-    const customer = { id: 3, firstName: `Johnny ${new Date()}`, lastName: 'Walker' };
+    const customer = { id: 5, firstName: `Johnny ${new Date()}`, lastName: 'Walker' };
     this.crypto.encryptWithAesCbcKey(customer)
       .then((cipher) => {
         this.db.customers.add({ cipher: cipher });
@@ -59,62 +81,16 @@ export class SingleKeyComponent implements OnInit {
   }
 
   showCustomers() {
-    this.db.customers.toArray()
-      .then((array) => {
-        const arr = [];
-        for (const c of array) {
-          arr.push(c);
-        }
-        return arr;
-      })
-      .then((cipherBuffer) => {
-        for (const buf of cipherBuffer) {
-          const plaintextBytes = new Uint8Array(buf);
-          const plaintextString = Util.byteArrayToHexString(plaintextBytes);
-          const parsedObject = JSON.parse(plaintextString);
-          this.customers.push(parsedObject);
-        }
-        // const plaintextBytes = new Uint8Array(cipherBuffer);
-        // const plaintextString = Util.byteArrayToString(plaintextBytes);
-        // const parsedObject = JSON.parse(plaintextString);
-        // this.customers.push(parsedObject);
-      });
-
-  }
-
-  showCustomers2() {
     this.db.customers.each(obj => {
-      const valuer = this.crypto.decryptWithAesCbcKey(obj.cipher);
-      console.log(valuer);
-      this.customers.push(valuer);
+      this.crypto.decryptWithAesCbcKey(obj.cipher)
+        .then(val => {
+          const jsonData = JSON.parse(val);
+          this.customers.push(jsonData);
+          console.log(jsonData);
+        });
     });
   }
 
 }
 
 
-
-
-// showCustomers() {
-//   this.db.customers.toArray()
-//   .then((array) => {
-//     const arr = [];
-//     for (const c of array) {
-//       arr.push(c);
-//     }
-//     return arr;
-//   })
-//   .then((cipherBuffer) => {
-//     for (const buf of cipherBuffer) {
-//       const plaintextBytes = new Uint8Array(buf);
-//       const plaintextString = Util.byteArrayToString(plaintextBytes);
-//       const parsedObject = JSON.parse(plaintextString);
-//       this.customers.push(parsedObject);
-//     }
-//     // const plaintextBytes = new Uint8Array(cipherBuffer);
-//     // const plaintextString = Util.byteArrayToString(plaintextBytes);
-//     // const parsedObject = JSON.parse(plaintextString);
-//     // this.customers.push(parsedObject);
-//    });
-
-// }
