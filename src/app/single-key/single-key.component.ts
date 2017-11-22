@@ -37,8 +37,8 @@ export class SingleKeyComponent implements OnInit {
 
     // recreate key and store in localStorage
     this.crypto.generateAesCbcKey()
-      .then((aesKey) => {
-        localStorage.setItem(this.aesKeyName, aesKey);
+      .then((aesKeyString) => {
+        localStorage.setItem(this.aesKeyName, aesKeyString);
 
         const iv = window.crypto.getRandomValues(new Uint8Array(16));
         const ivHexString = Util.byteArrayToHexString(iv);

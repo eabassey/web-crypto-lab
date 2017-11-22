@@ -108,7 +108,50 @@ export class CryptoService {
     }
 
     // 2. Using Password to Generate CryptoKey
+        // Yield a Promise of a 256-bit AES-CBC CryptoKey
+     convertPassphraseToKey(passphraseString) {
+        const iterations = 1000000;   // Longer is slower... hence stronger
+        const saltString = 'This is my salt. I need more pepper and tomatoes to spice up..';
+        const saltBytes = Util.stringToByteArray(saltString);
+        const passphraseBytes = Util.stringToByteArray(passphraseString);
 
+        // deriveKey needs to be given a base key. This is just a
+        // CryptoKey that represents the starting passphrase.
+        return window.crypto.subtle.importKey(
+            'raw',
+            passphraseBytes,
+            {name: 'PBKDF2'}
+            ,
+            false,
+            ['deriveKey']
+        )
+        .then((baseKey) => {
+            return window.crypto.subtle.deriveKey(
+                // Firefox currently only supports SHA-1 with PBKDF2
+                {name: 'PBKDF2', salt: saltBytes, iterations: iterations, hash: 'SHA-1'},
+                baseKey,
+                {name: 'AES-CBC', length: 256}, // Resulting key type we want
+                true,
+                ['encrypt', 'decrypt']
+            );
+        })
+        .then(aesCbcKey => {
+            // Export to ArrayBuffer
+            return window.crypto.subtle.exportKey(
+                'raw',
+                aesCbcKey
+            );
+        })
+        .then((buf) => {
+            // Cast to a byte array, place in Key field
+            const byteArray = new Uint8Array(buf);
+            return Util.byteArrayToHexString(byteArray);
+        });
+    }
+
+        // password based encryption
+    encryptWithPassword(password: string) {
+    }
 
 
     // 3. Using Private & Public Keys with Server Communication

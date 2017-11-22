@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { StorageService } from './_lib/storage.service';
@@ -8,6 +9,7 @@ import { CryptoService } from './_lib/_crypto.service';
 import { InjectionToken } from '@angular/core';
 import { AES_CBC_KEY_NAME, INIT_VECTOR } from './_lib/config';
 import { SingleKeyComponent } from './single-key/single-key.component';
+import { PasswordBasedComponent } from './password-based/password-based.component';
 
 
 
@@ -15,13 +17,16 @@ import { SingleKeyComponent } from './single-key/single-key.component';
 @NgModule({
   declarations: [
     AppComponent,
-    SingleKeyComponent
+    SingleKeyComponent,
+    PasswordBasedComponent
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     RouterModule.forRoot([
       { path: '', pathMatch: 'full', redirectTo: '/single-key'},
-      { path: 'single-key',  component: SingleKeyComponent }
+      { path: 'single-key',  component: SingleKeyComponent },
+      { path: 'password-based', component: PasswordBasedComponent }
     ])
   ],
   providers: [
