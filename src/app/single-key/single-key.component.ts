@@ -16,7 +16,7 @@ import 'rxjs/add/operator/reduce';
 })
 export class SingleKeyComponent implements OnInit {
 
-customers = [];
+  customers = [];
 
   constructor(private db: StorageService,
     private crypto: CryptoService,
@@ -40,7 +40,7 @@ customers = [];
   // Checking for key string in localStorage
   get keyIsAvailable(): boolean {
     return !!localStorage.getItem(this.aesKeyName) &&
-           !!localStorage.getItem(this.ivName);
+      !!localStorage.getItem(this.ivName);
   }
 
   onResetOrChangePassword() {
@@ -51,36 +51,44 @@ customers = [];
 
   // COMPONENT FUNCTIONS
   addCustomer() {
-    const customer = { id: 3, firstName: `John ${new Date()}`, lastName: 'Yuei' };
+    const customer = { id: 3, firstName: `Johnny ${new Date()}`, lastName: 'Walker' };
     this.crypto.encryptWithAesCbcKey(customer)
-        .then((cipher) => {
-          this.db.customers.add({ cipher: cipher});
-        });
+      .then((cipher) => {
+        this.db.customers.add({ cipher: cipher });
+      });
   }
 
-showCustomers() {
-  this.db.customers.toArray()
-  .then((array) => {
-    const arr = [];
-    for (const c of array) {
-      arr.push(c);
-    }
-    return arr;
-  })
-  .then((cipherBuffer) => {
-    for (const buf of cipherBuffer) {
-      const plaintextBytes = new Uint8Array(buf);
-      const plaintextString = Util.byteArrayToHexString(plaintextBytes);
-       const parsedObject = JSON.parse(plaintextString);
-      this.customers.push(parsedObject);
-    }
-    // const plaintextBytes = new Uint8Array(cipherBuffer);
-    // const plaintextString = Util.byteArrayToString(plaintextBytes);
-    // const parsedObject = JSON.parse(plaintextString);
-    // this.customers.push(parsedObject);
-   });
+  showCustomers() {
+    this.db.customers.toArray()
+      .then((array) => {
+        const arr = [];
+        for (const c of array) {
+          arr.push(c);
+        }
+        return arr;
+      })
+      .then((cipherBuffer) => {
+        for (const buf of cipherBuffer) {
+          const plaintextBytes = new Uint8Array(buf);
+          const plaintextString = Util.byteArrayToHexString(plaintextBytes);
+          const parsedObject = JSON.parse(plaintextString);
+          this.customers.push(parsedObject);
+        }
+        // const plaintextBytes = new Uint8Array(cipherBuffer);
+        // const plaintextString = Util.byteArrayToString(plaintextBytes);
+        // const parsedObject = JSON.parse(plaintextString);
+        // this.customers.push(parsedObject);
+      });
 
-}
+  }
+
+  showCustomers2() {
+    this.db.customers.each(obj => {
+      const valuer = this.crypto.decryptWithAesCbcKey(obj.cipher);
+      console.log(valuer);
+      this.customers.push(valuer);
+    });
+  }
 
 }
 

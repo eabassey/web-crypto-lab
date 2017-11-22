@@ -98,13 +98,13 @@ export class CryptoService {
                 key,
                 cipherBytes
             );
+        })
+        .then((cipherBuffer) => {
+           const plaintextBytes = new Uint8Array(cipherBuffer);
+           const plaintextString = Util.byteArrayToString(plaintextBytes);
+           // const parsedObject = JSON.parse(plaintextString);
+           return plaintextString;
         });
-        // .then((cipherBuffer) => {
-        //    const plaintextBytes = new Uint8Array(cipherBuffer);
-        //    const plaintextString = Util.byteArrayToString(plaintextBytes);
-        //    const parsedObject = JSON.parse(plaintextString);
-        //    return parsedObject;
-        // });
     }
 
     // 2. Using Password to Generate CryptoKey
