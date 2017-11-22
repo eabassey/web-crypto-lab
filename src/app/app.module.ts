@@ -10,6 +10,7 @@ import { InjectionToken } from '@angular/core';
 import { AES_CBC_KEY_NAME, INIT_VECTOR } from './_lib/config';
 import { SingleKeyComponent } from './single-key/single-key.component';
 import { PasswordBasedComponent } from './password-based/password-based.component';
+import { KeyPairComponent } from './key-pair/key-pair.component';
 
 
 
@@ -18,7 +19,8 @@ import { PasswordBasedComponent } from './password-based/password-based.componen
   declarations: [
     AppComponent,
     SingleKeyComponent,
-    PasswordBasedComponent
+    PasswordBasedComponent,
+    KeyPairComponent
   ],
   imports: [
     BrowserModule,
